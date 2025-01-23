@@ -39,29 +39,39 @@ const calculateGematria = (word) => {
   }, 0);
 };
 
-// Función para procesar un archivo JSON y agregar valores únicos
-const processFile = (filePath, uniqueValues) => {
+// Función para procesar un archivo JSON y recopilar información
+const processFile = (filePath, result) => {
   const fileData = fs.readFileSync(filePath, "utf-8");
-  const { text } = JSON.parse(fileData);
+  const { book, text } = JSON.parse(fileData);
 
-  // Recorrer cada grupo de versículos
-  text.forEach((paragraph) => {
-    paragraph.forEach((verse) => {
+  text.forEach(({ chapter, verses }, chapterIndex) => {
+    verses.forEach((verse, verseIndex) => {
       // Dividir el versículo en palabras
       const words = verse.split(" ");
 
-      // Calcular el valor de cada palabra y agregarlo al conjunto
       words.forEach((word) => {
         const gematriaValue = calculateGematria(word);
-        uniqueValues.add(gematriaValue);
+
+        // Si el valor no existe en el resultado, inicializarlo
+        if (!result[gematriaValue]) {
+          result[gematriaValue] = [];
+        }
+
+        // Agregar la palabra con su ubicación
+        result[gematriaValue].push({
+          word,
+          book,
+          chapter: chapter || chapterIndex + 1,
+          verse: verseIndex + 1,
+        });
       });
     });
   });
 };
 
 // Función principal para procesar todos los archivos en una carpeta
-const countUniqueGematriaValues = (directory) => {
-  const uniqueValues = new Set();
+const analyzeTorah = (directory) => {
+  const result = {};
 
   // Leer todos los archivos JSON en la carpeta
   const files = fs
@@ -71,15 +81,24 @@ const countUniqueGematriaValues = (directory) => {
   files.forEach((file) => {
     const filePath = path.join(directory, file);
     console.log(`Procesando archivo: ${file}`); // Log para confirmar el archivo procesado
-    processFile(filePath, uniqueValues);
+    processFile(filePath, result);
   });
 
-  return uniqueValues.size; // Número de valores únicos
+  return result;
+};
+
+// Función para guardar el resultado en un archivo JSON
+const saveResult = (result, outputPath) => {
+  fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), "utf-8");
+  console.log(`Resultado guardado en: ${outputPath}`);
 };
 
 // Directorio donde están los archivos JSON
 const dataDirectory = path.join(__dirname, "../data");
+const outputFile = path.join(__dirname, "../output/gematria_analysis.json");
 
-// Contar los valores únicos en todos los archivos
-const uniqueCount = countUniqueGematriaValues(dataDirectory);
-console.log(`Cantidad total de valores únicos de guematria: ${uniqueCount}`);
+// Analizar la Torah
+const analysisResult = analyzeTorah(dataDirectory);
+
+// Guardar el resultado
+saveResult(analysisResult, outputFile);
