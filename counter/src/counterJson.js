@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const { MongoClient } = require("mongodb");
 
 // Mapa de valores numéricos de las letras hebreas
 const hebrewGematria = {
@@ -88,53 +87,18 @@ const analyzeTorah = (directory) => {
   return result;
 };
 
-// Función para guardar los datos en MongoDB
-const saveToMongoDB = async (result) => {
-  const uri = "mongodb://admin:password@localhost:27017"; // Cambia esto si usas MongoDB Atlas u otra configuración
-  const client = new MongoClient(uri);
-
-  try {
-    await client.connect();
-    console.log("Conectado a MongoDB");
-
-    const database = client.db("gematria");
-    const collection = database.collection("words");
-
-    // Eliminar datos existentes para evitar duplicados (opcional)
-    await collection.deleteMany({});
-
-    // Preparar documentos para insertar
-    const documents = [];
-    for (const [gematriaValue, words] of Object.entries(result)) {
-      words.forEach((wordEntry) => {
-        documents.push({
-          gematriaValue: parseInt(gematriaValue, 10),
-          word: wordEntry.word,
-          book: wordEntry.book,
-          chapter: wordEntry.chapter,
-          verse: wordEntry.verse,
-        });
-      });
-    }
-
-    // Insertar en la base de datos
-    const insertResult = await collection.insertMany(documents);
-    console.log(
-      `Insertados ${insertResult.insertedCount} documentos en la colección.`
-    );
-  } catch (error) {
-    console.error("Error al guardar en MongoDB:", error);
-  } finally {
-    await client.close();
-    console.log("Conexión con MongoDB cerrada");
-  }
+// Función para guardar el resultado en un archivo JSON
+const saveResult = (result, outputPath) => {
+  fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), "utf-8");
+  console.log(`Resultado guardado en: ${outputPath}`);
 };
 
 // Directorio donde están los archivos JSON
 const dataDirectory = path.join(__dirname, "../data");
+const outputFile = path.join(__dirname, "../output/gematria_analysis.json");
 
 // Analizar la Torah
 const analysisResult = analyzeTorah(dataDirectory);
 
-// Guardar en MongoDB
-saveToMongoDB(analysisResult);
+// Guardar el resultado
+saveResult(analysisResult, outputFile);
