@@ -1,0 +1,44 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+input {
+  margin-right: 1rem;
+}
+
+/* Estilos para la tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+/* Estilos para las celdas de la tabla */
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Estilos para el encabezado de la tabla */
+th {
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Estilos al pasar el ratón sobre las filas */
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilos para la primera columna */
+td:first-child {
+  /* font-weight: bold; */
+  color: #555;
+  background-color: #f4f4f4;
+}
