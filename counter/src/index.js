@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { MongoClient } = require("mongodb");
 
 // Mapa de valores numéricos de las letras hebreas
 const hebrewGematria = {
@@ -39,29 +40,39 @@ const calculateGematria = (word) => {
   }, 0);
 };
 
-// Función para procesar un archivo JSON y agregar valores únicos
-const processFile = (filePath, uniqueValues) => {
+// Función para procesar un archivo JSON y recopilar información
+const processFile = (filePath, result) => {
   const fileData = fs.readFileSync(filePath, "utf-8");
-  const { text } = JSON.parse(fileData);
+  const { book, text } = JSON.parse(fileData);
 
-  // Recorrer cada grupo de versículos
-  text.forEach((paragraph) => {
-    paragraph.forEach((verse) => {
+  text.forEach(({ chapter, verses }, chapterIndex) => {
+    verses.forEach((verse, verseIndex) => {
       // Dividir el versículo en palabras
       const words = verse.split(" ");
 
-      // Calcular el valor de cada palabra y agregarlo al conjunto
       words.forEach((word) => {
         const gematriaValue = calculateGematria(word);
-        uniqueValues.add(gematriaValue);
+
+        // Si el valor no existe en el resultado, inicializarlo
+        if (!result[gematriaValue]) {
+          result[gematriaValue] = [];
+        }
+
+        // Agregar la palabra con su ubicación
+        result[gematriaValue].push({
+          word,
+          book,
+          chapter: chapter || chapterIndex + 1,
+          verse: verseIndex + 1,
+        });
       });
     });
   });
 };
 
 // Función principal para procesar todos los archivos en una carpeta
-const countUniqueGematriaValues = (directory) => {
-  const uniqueValues = new Set();
+const analyzeTorah = (directory) => {
+  const result = {};
 
   // Leer todos los archivos JSON en la carpeta
   const files = fs
@@ -71,15 +82,59 @@ const countUniqueGematriaValues = (directory) => {
   files.forEach((file) => {
     const filePath = path.join(directory, file);
     console.log(`Procesando archivo: ${file}`); // Log para confirmar el archivo procesado
-    processFile(filePath, uniqueValues);
+    processFile(filePath, result);
   });
 
-  return uniqueValues.size; // Número de valores únicos
+  return result;
+};
+
+// Función para guardar los datos en MongoDB
+const saveToMongoDB = async (result) => {
+  const uri = "mongodb://admin:password@localhost:27017"; // Cambia esto si usas MongoDB Atlas u otra configuración
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    console.log("Conectado a MongoDB");
+
+    const database = client.db("gematria");
+    const collection = database.collection("words");
+
+    // Eliminar datos existentes para evitar duplicados (opcional)
+    await collection.deleteMany({});
+
+    // Preparar documentos para insertar
+    const documents = [];
+    for (const [gematriaValue, words] of Object.entries(result)) {
+      words.forEach((wordEntry) => {
+        documents.push({
+          gematriaValue: parseInt(gematriaValue, 10),
+          word: wordEntry.word,
+          book: wordEntry.book,
+          chapter: wordEntry.chapter,
+          verse: wordEntry.verse,
+        });
+      });
+    }
+
+    // Insertar en la base de datos
+    const insertResult = await collection.insertMany(documents);
+    console.log(
+      `Insertados ${insertResult.insertedCount} documentos en la colección.`
+    );
+  } catch (error) {
+    console.error("Error al guardar en MongoDB:", error);
+  } finally {
+    await client.close();
+    console.log("Conexión con MongoDB cerrada");
+  }
 };
 
 // Directorio donde están los archivos JSON
 const dataDirectory = path.join(__dirname, "../data");
 
-// Contar los valores únicos en todos los archivos
-const uniqueCount = countUniqueGematriaValues(dataDirectory);
-console.log(`Cantidad total de valores únicos de guematria: ${uniqueCount}`);
+// Analizar la Torah
+const analysisResult = analyzeTorah(dataDirectory);
+
+// Guardar en MongoDB
+saveToMongoDB(analysisResult);
