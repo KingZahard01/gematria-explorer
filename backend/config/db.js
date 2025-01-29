@@ -3,12 +3,13 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    const MONGO_USERNAME = "juanjose10312";
-    const MONGO_PASSWORD = "nA9WBOLjM6CnJ4HW";
-    const MONGO_HOST = "mondongo.m2iep.mongodb.net";
-    const MONGO_DB = "gematria";
+    // const MONGO_USERNAME = "juanjose10312";
+    // const MONGO_PASSWORD = "nA9WBOLjM6CnJ4HW";
+    // const MONGO_HOST = "mondongo.m2iep.mongodb.net";
+    // const MONGO_DB = "gematria";
 
-    const connectionString = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DB}?retryWrites=true&w=majority`;
+    // mongodb+srv://juanjose10312:nA9WBOLjM6CnJ4HW@mondongo.m2iep.mongodb.net/gematria?retryWrites=true&w=majority
+    const connectionString = process.env.MONGODB_URI;
 
     await mongoose.connect(connectionString);
     console.log("Conexión exitosa a MongoDB");
