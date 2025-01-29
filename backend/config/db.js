@@ -11,10 +11,7 @@ const connectDB = async () => {
 
     const connectionString = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
 
-    await mongoose.connect(connectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(connectionString);
     console.log("Conexión exitosa a MongoDB");
   } catch (error) {
     console.error("Error de conexión a MongoDB:", error);
