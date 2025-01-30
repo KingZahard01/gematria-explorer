@@ -58,8 +58,8 @@ const GematriaSearch = () => {
               <th>Valor</th>
               <th>Palabra</th>
               <th>Libro</th>
-              <th>Capítulo</th>
-              <th>Versículo</th>
+              {/* <th>Capítulo</th>
+              <th>Versículo</th> */}
             </tr>
           </thead>
           <tbody>
@@ -67,9 +67,11 @@ const GematriaSearch = () => {
               <tr key={index}>
                 <td>{item.gematriaValue}</td>
                 <td>{item.word}</td>
-                <td>{item.book}</td>
-                <td>{item.chapter}</td>
-                <td>{item.verse}</td>
+                <td>
+                  {item.book} {item.chapter}:{item.verse}
+                </td>
+                {/* <td>{item.chapter}</td>
+                <td>{item.verse}</td> */}
               </tr>
             ))}
           </tbody>

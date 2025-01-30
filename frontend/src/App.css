@@ -12,6 +12,7 @@ input {
 /* Estilos para la tabla */
 table {
   width: 100%;
+  /* width: 800px; */
   border-collapse: collapse;
   margin: 20px 0;
 }
@@ -41,4 +42,28 @@ td:first-child {
   /* font-weight: bold; */
   color: #555;
   background-color: #f4f4f4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #ddd;
+  }
+
+  button {
+    border: 1px solid #555;
+  }
+
+  th {
+    background-color: #555;
+    color: #ddd;
+  }
+
+  tr:hover {
+    background-color: #333;
+  }
+
+  td:first-child {
+    background-color: #555;
+    color: #ddd;
+  }
 }

@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const wordRoutes = require("./routes/wordRoutes");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,5 +30,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
