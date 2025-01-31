@@ -2,20 +2,20 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  try {
-    // const MONGO_USERNAME = "juanjose10312";
-    // const MONGO_PASSWORD = "nA9WBOLjM6CnJ4HW";
-    // const MONGO_HOST = "mondongo.m2iep.mongodb.net";
-    // const MONGO_DB = "gematria";
+  // Validar si la variable de entorno está definida
+  if (!process.env.MONGODB_URI) {
+    console.error("No se ha definido la variable de entorno MONGODB_URI");
+    process.exit(1);
+  }
 
-    // mongodb+srv://juanjose10312:nA9WBOLjM6CnJ4HW@mondongo.m2iep.mongodb.net/gematria?retryWrites=true&w=majority
+  try {
     const connectionString = process.env.MONGODB_URI;
 
+    // Conexión a MongoDB
     await mongoose.connect(connectionString);
     console.log("Conexión exitosa a MongoDB");
   } catch (error) {
-    console.error("Error de conexión a MongoDB:", error);
-    console.error("Connection String utilizada:", error.connectionString);
+    console.error("Error de conexión a MongoDB:", error.message);
     process.exit(1);
   }
 };
