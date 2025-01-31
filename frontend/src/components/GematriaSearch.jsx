@@ -16,7 +16,7 @@ const GematriaSearch = () => {
       setLoading(true);
       setError("");
       const response = await fetch(
-        `http://localhost:3000/api/gematria/${searchValue}`
+        `https://gematria-explorer-backend.onrender.com/api/gematria/${searchValue}`
       );
 
       if (!response.ok) {
