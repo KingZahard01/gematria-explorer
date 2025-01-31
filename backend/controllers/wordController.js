@@ -31,17 +31,17 @@ const wordController = {
   },
 
   // Obtener todas las palabras
-  getAllWords: async (req, res) => {
-    try {
-      const words = await Word.find();
-      res.json(words);
-    } catch (error) {
-      res.status(500).json({
-        message: "Error al obtener las palabras",
-        error: error.message,
-      });
-    }
-  },
+  // getAllWords: async (req, res) => {
+  //   try {
+  //     const words = await Word.find();
+  //     res.json(words);
+  //   } catch (error) {
+  //     res.status(500).json({
+  //       message: "Error al obtener las palabras",
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 };
 
 module.exports = wordController;
