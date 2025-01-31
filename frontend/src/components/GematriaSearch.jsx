@@ -43,8 +43,13 @@ const GematriaSearch = () => {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder="Ingresa un valor numérico"
+          aria-label="Valor numérico"
         />
-        <button onClick={handleSearch} disabled={loading}>
+        <button
+          onClick={handleSearch}
+          disabled={loading}
+          aria-label="Buscar gematría"
+        >
           {loading ? "Buscando..." : "Buscar"}
         </button>
       </div>
