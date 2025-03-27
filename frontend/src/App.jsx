@@ -1,5 +1,5 @@
 import "./App.css";
-import GematriaSearch from "./components/GematriaSearch";
+import GematriaSearch from "./GematriaSearch";
 
 function App() {
   return (
