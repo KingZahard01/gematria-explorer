@@ -1,4 +1,7 @@
 import { useState } from "react";
+import SearchInput from "./SearchInput.jsx";
+import ResultsTable from "./ResultsTable.jsx";
+import ErrorDisplay from "./ErrorDisplay.jsx";
 
 const GematriaSearch = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -34,54 +37,18 @@ const GematriaSearch = () => {
   };
 
   return (
-    <div>
-      <h1>Búsqueda de Gematría en la Torá</h1>
+    <div className="gematria-search-container">
+      <h1>Búsqueda de Gematria en la Torá</h1>
+      <SearchInput
+        value={searchValue}
+        onChange={setSearchValue}
+        onSearch={handleSearch}
+        loading={loading}
+      />
 
-      <div>
-        <input
-          type="number"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="Ingresa un valor numérico"
-          aria-label="Valor numérico"
-        />
-        <button
-          onClick={handleSearch}
-          disabled={loading}
-          aria-label="Buscar gematría"
-        >
-          {loading ? "Buscando..." : "Buscar"}
-        </button>
-      </div>
+      <ErrorDisplay error={error} />
 
-      {error && <p>{error}</p>}
-
-      {results.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>Valor</th>
-              <th>Palabra</th>
-              <th>Libro</th>
-              {/* <th>Capítulo</th>
-              <th>Versículo</th> */}
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((item, index) => (
-              <tr key={index}>
-                <td>{item.gematriaValue}</td>
-                <td>{item.word}</td>
-                <td>
-                  {item.book} {item.chapter}:{item.verse}
-                </td>
-                {/* <td>{item.chapter}</td>
-                <td>{item.verse}</td> */}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ResultsTable results={results} />
     </div>
   );
 };
